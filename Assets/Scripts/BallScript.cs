@@ -24,45 +24,53 @@ public class BallScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(ballRB.velocity.magnitude > 30)
-        {
-            ballRB.AddForce(-ballRB.velocity.normalized * forceMulti, ForceMode.Impulse);
-        }
+        LimitVelocity();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Projectile"))
-        {
-            explosion.Play();
-
-            if (transform.localScale.x > minSize)
-            {
-                Destroy(collision.gameObject);
-
-                GameObject newball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
-                newball.transform.localScale = new Vector3(transform.localScale.x / 2, transform.localScale.y / 2, transform.localScale.x / 2);
-
-                newball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
-                newball.transform.localScale = new Vector3(transform.localScale.x / 2, transform.localScale.y / 2, transform.localScale.x / 2);
-
-                Destroy(gameObject);
-            }
-            else
-            {
-
-                Destroy(collision.gameObject);
-                Destroy(gameObject);
-            }
-
+        {           
+            Destroy(collision.gameObject);
+            DestroyBall();
         }
         else if (collision.gameObject.CompareTag("Player")) 
         {
             collision.gameObject.GetComponent<PlayerController>().AddHealth(-1);
+            DestroyBall();
         }
         if(collision.gameObject.CompareTag("Ground"))
         {
             ballRB.AddForce(Vector3.up * forceMulti, ForceMode.Impulse);
+        }
+    }
+
+    private void DestroyBall()
+    {
+        //explosion.Play();
+        ParticleSystem exp = Instantiate(explosion, transform.position, Quaternion.identity);
+        Destroy(exp, 2f);
+        if (transform.localScale.x > minSize)
+        {
+            GameObject newball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
+            newball.transform.localScale = new Vector3(transform.localScale.x / 2, transform.localScale.y / 2, transform.localScale.x / 2);
+
+            newball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
+            newball.transform.localScale = new Vector3(transform.localScale.x / 2, transform.localScale.y / 2, transform.localScale.x / 2);
+
+            Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void LimitVelocity()
+    {
+        if (ballRB.velocity.magnitude > 30)
+        {
+            ballRB.AddForce(-ballRB.velocity.normalized * forceMulti, ForceMode.Impulse);
         }
     }
 }

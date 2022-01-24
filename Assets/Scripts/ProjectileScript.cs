@@ -21,6 +21,7 @@ public class ProjectileScript : MonoBehaviour
         transform.localScale = new Vector3(transform.localScale.x, 
             scaleIncrease, 
             transform.localScale.z);
+
         transform.position = new Vector3(transform.position.x, scaleIncrease, transform.position.z);
         //if
 
